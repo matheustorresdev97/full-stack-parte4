@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { AxiosError } from "axios";
+
+import { api } from "../services/api";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -10,24 +13,45 @@ import { formatCurrency } from "../utils/formatCurrency";
 
 import searchSvg from "../assets/search.svg";
 
-const REFUND_EXAMPLE = {
-  id: "123",
-  name: "Matheus",
-  category: "Transporte",
-  amount: formatCurrency(34.5),
-  categoryImg: CATEGORIES["transport"].icon,
-};
+const PER_PAGE: number = 5;
 
 export function Dashboard() {
   const [name, setName] = useState("");
   const [page, setPage] = useState(1);
-  const [totalOfPage, setTotalOfPage] = useState(10);
-  const [refunds, setRefunds] = useState<RefundItemProps[]>([REFUND_EXAMPLE]);
+  const [totalOfPage, setTotalOfPage] = useState(0);
+  const [refunds, setRefunds] = useState<RefundItemProps[]>([]);
 
-  function fetchRefunds(e: React.FormEvent) {
+  async function fetchRefunds() {
+    try {
+      const response = await api.get<RefundsPaginationAPIResponse>(
+        `/refunds?name=${name.trim()}&page=${page}&perPage=${PER_PAGE}`
+      );
+
+      setRefunds(
+        response.data.refunds.map((refund) => ({
+          id: refund.id,
+          name: refund.user.name,
+          description: refund.name,
+          amount: formatCurrency(refund.amount),
+          categoryImg: CATEGORIES[refund.category].icon,
+        }))
+      );
+
+      setTotalOfPage(response.data.pagination.totalPages);
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof AxiosError) {
+        return alert(error.response?.data.message);
+      }
+
+      alert("Não foi possível carregar");
+    }
+  }
+
+  function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    console.log(name);
+    fetchRefunds();
   }
 
   function handlePagination(action: "next" | "previous") {
@@ -44,12 +68,16 @@ export function Dashboard() {
     });
   }
 
+  useEffect(() => {
+    fetchRefunds();
+  }, [page]);
+
   return (
     <div className="bg-gray-500 rounded-xl p-10 max-w-[768px] mx-auto">
       <h1 className="text-gray-100 font-bold text-xl flex-1">Solicitações</h1>
 
       <form
-        onSubmit={fetchRefunds}
+        onSubmit={onSubmit}
         className="flex flex-1 justify-between items-center pb-6 border-b-[1px] border-b-gray-400 mt-6 gap-2"
       >
         <Input
