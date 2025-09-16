@@ -1,57 +1,77 @@
-import { useState } from "react";
+import { useActionState } from "react";
+import { z, ZodError } from "zod";
+import { AxiosError } from "axios";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { Link } from "react-router";
+
+import { useAuth } from "../hooks/useAuth";
+import { api } from "../services/api";
+
+const sigInSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().trim().min(1, "Informe a senha"),
+});
 
 export function SignIn() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsloading] = useState(false);
+  const [state, formAction, isLoading] = useActionState(signIn, null);
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsloading(true);
-    
-    setTimeout(() => {
-      setIsloading(false);
-    }, 3000);
-    console.log(email, password);
+  const auth = useAuth();
 
-    setEmail("");
-    setPassword("");
+  async function signIn(_: any, formData: FormData) {
+    try {
+      const data = sigInSchema.parse({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      });
+
+      const response = await api.post("/sessions", data);
+      auth.save(response.data);
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof ZodError) {
+        return { message: error.issues[0].message };
+      }
+
+      if (error instanceof AxiosError) {
+        return { message: error.response?.data.message };
+      }
+    }
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full flex flex-col gap-4">
+    <form action={formAction} className="w-full flex flex-col gap-4">
       <Input
         required
-        name="E-mail"
+        label="E-mail"
         type="email"
         placeholder="seu@email.com"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
+        name="email"
       />
 
       <Input
         required
-        name="Senha"
+        label="Senha"
         type="password"
         placeholder="1234567"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
+        name="password"
       />
+
+      <p className="text-sm text-red-600 text-center my-4 font-medium">
+        {state?.message}
+      </p>
 
       <Button type="submit" isLoading={isLoading}>
         Entrar
       </Button>
 
-      <Link
-        to={"/signup"}
+      <a
+        href="/signup"
         className="text-sm font-semibold text-gray-100 mt-8 mb-4 text-center hover:text-green-800 transition ease-linear"
       >
         Criar conta
-      </Link>
+      </a>
     </form>
   );
 }

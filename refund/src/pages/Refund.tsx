@@ -46,7 +46,7 @@ export function Refund() {
 
       <Input
         required
-        name="Nome da solicitação"
+        label="Nome da solicitação"
         value={name}
         onChange={(e) => setName(e.target.value)}
         disabled={!!params.id}
@@ -69,7 +69,7 @@ export function Refund() {
 
         <Input
           required
-          name="Valor"
+          label="Valor"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           disabled={!!params.id}
