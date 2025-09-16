@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./app.module.css";
+
 import { Header } from "./components/Header";
-import type { GuessProps } from "./components/LettersUsed";
-import { WORDS, type Challenge } from "./utils/words";
 import { Tip } from "./components/Tip";
 import { Letter } from "./components/Letter";
 import { Loading } from "./components/Loading";
+import { Input } from "./components/Input";
+import { Button } from "./components/Button";
+import { WORDS, type Challenge } from "./utils/words";
+import { LettersUsed, type GuessProps } from "./components/LettersUsed";
 
 export default function App() {
   const [score, setScore] = useState(0);
@@ -14,6 +17,36 @@ export default function App() {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
 
   const ATTEMPT_LIMIT = 10;
+
+  function handleConfirm() {
+    if (!challenge) {
+      return;
+    }
+
+    if (!letter.trim()) {
+      return alert("Digite uma letra!");
+    }
+
+    const value = letter.toUpperCase();
+    const exists = guesses.find((guess) => guess.value === value);
+
+    if (exists) {
+      return alert("Você já utilizou a letra " + value);
+    }
+
+    const hits = challenge.word
+      .toUpperCase()
+      .split("")
+      .filter((char) => char === value).length;
+
+    const correct = hits > 0;
+    const currentScore = score + hits;
+
+    setGuesses((prevState) => [...prevState, { value, correct }]);
+    setScore(currentScore);
+
+    setLetter("");
+  }
 
   function startGame() {
     const index = Math.floor(Math.random() * WORDS.length);
@@ -35,6 +68,28 @@ export default function App() {
       startGame();
     }
   }
+
+  function endGame(message: string) {
+    alert(message);
+    startGame();
+  }
+
+  useEffect(() => {
+    startGame();
+  }, []);
+
+  useEffect(() => {
+    if (!challenge) {
+      return;
+    }
+    setTimeout(() => {
+      if (score === challenge.word.length) {
+        return endGame("Parabéns, você descobriu a palavra!");
+      } else if (guesses.length === ATTEMPT_LIMIT) {
+        return endGame("Que pena, você usou todas as tentativas!");
+      }
+    }, 200);
+  }, [score, guesses.length]);
 
   if (!challenge) {
     return <Loading />;
@@ -66,6 +121,22 @@ export default function App() {
             );
           })}
         </div>
+
+        <h4>Palpite</h4>
+
+        <div className={styles.guess}>
+          <Input
+            autoFocus
+            maxLength={1}
+            value={letter}
+            placeholder="?"
+            onChange={(e) => setLetter(e.target.value)}
+          />
+
+          <Button title="Confirmar" onClick={handleConfirm} />
+        </div>
+
+        <LettersUsed data={guesses} />
       </main>
     </div>
   );

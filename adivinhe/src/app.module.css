@@ -17,3 +17,36 @@
   padding-top: 4.5rem;
   border-radius: 0.75rem;
 }
+
+.word {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  margin: 2.5rem 0;
+}
+
+.container main h4 {
+  color: #32325f;
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.guess {
+  margin-top: 0.75rem;
+
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media (max-width: 425px) {
+  :root {
+    font-size: 14px;
+  }
+
+  .container main {
+    width: 100%;
+  }
+}
