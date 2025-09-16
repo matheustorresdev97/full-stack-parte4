@@ -3,6 +3,9 @@ import styles from "./app.module.css";
 import { Header } from "./components/Header";
 import type { GuessProps } from "./components/LettersUsed";
 import { WORDS, type Challenge } from "./utils/words";
+import { Tip } from "./components/Tip";
+import { Letter } from "./components/Letter";
+import { Loading } from "./components/Loading";
 
 export default function App() {
   const [score, setScore] = useState(0);
@@ -33,6 +36,10 @@ export default function App() {
     }
   }
 
+  if (!challenge) {
+    return <Loading />;
+  }
+
   return (
     <div className={styles.container}>
       <main>
@@ -41,6 +48,24 @@ export default function App() {
           current={guesses.length}
           onRestart={handleRestartGame}
         />
+
+        <Tip tip={challenge.tip} />
+
+        <div className={styles.word}>
+          {challenge.word.split("").map((letter, index) => {
+            const guess = guesses.find(
+              (guess) => guess.value.toUpperCase() === letter.toUpperCase()
+            );
+
+            return (
+              <Letter
+                key={index}
+                value={guess?.value}
+                color={guess?.correct ? "correct" : "default"}
+              />
+            );
+          })}
+        </div>
       </main>
     </div>
   );
