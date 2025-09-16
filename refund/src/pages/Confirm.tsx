@@ -1,4 +1,6 @@
-import { Navigate, useLocation } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
+
+import okSvg from "../assets/ok.svg";
 
 export function Confirm() {
   const location = useLocation();
@@ -8,8 +10,24 @@ export function Confirm() {
   }
 
   return (
-    <div>
-      <h1>C</h1>
+    <div className="bg-gray-500 max-w-[512px] rounded-xl flex flex-col items-center p-10 gap-6 mx-auto">
+      <h1 className="text-2xl font-bold text-center text-green-100">
+        Solicitação enviada
+      </h1>
+
+      <img className="w-28" src={okSvg} alt="ícone de OK" />
+
+      <p className="text-sm text-gray-200">
+        Agora é apenas aguardar! Sua solicitação será analisada e, em breve, o
+        setor financeiro irá entrar em contato com você
+      </p>
+
+      <Link
+        className="w-full p-3 text-center bg-green-100 rounded-lg text-white hover:bg-green-200 transition ease-linear"
+        to="/"
+      >
+        Nova solicitação
+      </Link>
     </div>
   );
 }
