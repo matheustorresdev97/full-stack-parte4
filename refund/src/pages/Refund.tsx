@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import { CATEGORIES, CATEGORIES_KEYS } from "../utils/categories";
 import { Input } from "../components/Input";
@@ -7,17 +7,24 @@ import { Select } from "../components/Select";
 import { Upload } from "../components/Upload";
 import { Button } from "../components/Button";
 
+import fileSvg from "../assets/file.svg";
+
 export function Refund() {
   const navigate = useNavigate();
+  const params = useParams<{ id: string }>();
 
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
+  const [name, setName] = useState("Teste");
+  const [amount, setAmount] = useState("transport");
+  const [category, setCategory] = useState("34");
   const [isLoading, setIsLoading] = useState(false);
   const [filename, setFilename] = useState<File | null>(null);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (params.id) {
+      return navigate(-1);
+    }
 
     console.log(name, amount, category, filename);
     navigate("/confirm", { state: { fromSubmit: true } });
@@ -42,6 +49,7 @@ export function Refund() {
         name="Nome da solicitação"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        disabled={!!params.id}
       />
 
       <div className="flex gap-4">
@@ -50,6 +58,7 @@ export function Refund() {
           name="Categoria"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+          disabled={!!params.id}
         >
           {CATEGORIES_KEYS.map((category) => (
             <option key={category} value={category}>
@@ -63,16 +72,28 @@ export function Refund() {
           name="Valor"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          disabled={!!params.id}
         />
       </div>
 
-      <Upload
-        filename={filename && filename.name}
-        onChange={(e) => e.target.files && setFilename(e.target.files[0])}
-      />
+      {params.id ? (
+        <a
+          className="text-sm text-green-100 font-semibold flex items-center justify-center gap-2 my-6 hover:opacity-70 transition ease-linear"
+          href="google.com"
+          target="_blank"
+        >
+          <img src={fileSvg} alt="Ícone de arquivo" />
+          Abrir Comprovante
+        </a>
+      ) : (
+        <Upload
+          filename={filename && filename.name}
+          onChange={(e) => e.target.files && setFilename(e.target.files[0])}
+        />
+      )}
 
       <Button type="submit" isLoading={isLoading}>
-        Enviar
+        {params.id ? "Voltar" : "Enviar"}
       </Button>
     </form>
   );
