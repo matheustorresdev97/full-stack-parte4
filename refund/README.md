@@ -1,69 +1,89 @@
-# React + TypeScript + Vite
+# 💸 Refund Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend do projeto **Refund**, versão web, desenvolvido na Parte 4 do curso Full-Stack da Rocketseat.  
+Este frontend se conecta à **API Refund** da Parte 3 (Node.js + TypeScript) para gerenciar solicitações de reembolso, uploads de comprovantes e filtragem de registros.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📂 Funcionalidades
 
-## Expanding the ESLint configuration
+- Autenticação de usuários (Employee e Manager)
+- Criação de solicitações de reembolso com upload de comprovantes
+- Visualização de solicitações com filtros e paginação
+- Área de confirmação de reembolsos (para Managers)
+- Persistência de sessão usando LocalStorage
+- Rotas protegidas por tipo de usuário
+- Feedback visual para ações (alertas, loaders)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🖥️ Preview
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+<p align="center">
+  <img src="./src/assets/img-preview1.png" alt="Preview Adivinhe a Palavra" width="400px"><br>
+  <img src="./src/assets/img-preview2.png" alt="Preview Adivinhe a Palavra" width="400px"><br>
+  <img src="./src/assets/img-preview3.png" alt="Preview Adivinhe a Palavra" width="400px"><br>
+   <img src="./src/assets/img-preview4.png" alt="Preview Adivinhe a Palavra" width="400px">
+</p>
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+
+---
+
+## ⚡ Como Rodar o Projeto
+
+> Este projeto frontend depende da API **API Refund** da Parte 3 do curso Full-Stack. Certifique-se de que o backend esteja rodando antes de iniciar o frontend.
+
+### 1. Rodar o Frontend (Refund Web)
+
+```bash
+# Acesse a pasta do backend
+cd refund
+
+# Instale as dependências
+npm install
+
+# Rode o servidor
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O frontend será servido, por padrão, em http://localhost:5173.
+Certifique-se de que o baseURL do Axios no frontend aponte para a URL correta do backend (http://localhost:3333 ou a porta configurada).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tecnologias Utilizadas
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- React + TypeScript
+- React Router
+- Axios
+- Zod (validação de formulários)
+- TailwindCSS + Tailwind Merge
+- Vite
+
+
+## 🔐 Estrutura de Rotas
+
+AuthRoutes
+
+/ → Login
+
+/signup → Cadastro
+
+EmployeeRoutes
+
+/ → Lista de reembolsos
+
+/confirm → Confirmar reembolso
+
+ManagerRoutes
+
+/ → Dashboard de reembolsos
+
+/refund/:id → Detalhes de uma solicitação
+
+
+## 📝 Observações
+
+Antes de usar, garanta que a API Refund esteja funcionando corretamente.
+
+Usuários devem ter permissão de employee ou manager para acessar as rotas protegidas.
+
+Os uploads de comprovantes só aceitam arquivos válidos conforme configuração do backend.
